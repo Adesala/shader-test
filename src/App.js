@@ -7,8 +7,8 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { AmbientLight } from "three";
 import glsl from 'babel-plugin-glsl/macro';
 import { gsap, CSSPlugin } from 'gsap';
-import imageTexture from './assets/moibleu.png'
-import imageTexture2 from './assets/moijaune.png'
+import imageTexture from './assets/fondBandW.png'
+import imageTexture2 from './assets/fondColor.png'
 
 
 
@@ -110,7 +110,7 @@ const WaveShaderMaterial = shaderMaterial(
       float offx = uv.x + sin(uv.y + u_time * .1);
       float offy = uv.y - u_time * 0.1 - cos(u_time * .001) * .01;
     
-      float c = circle(circlePos, 0.2, 5.) * 2.5;
+      float c = circle(circlePos, 0.02, 5.) * 2.5;
 
       float n = snoise3(vec3(offx, offy, u_time * .1) * 8.) - 1.;
       
@@ -214,7 +214,7 @@ const Scene = () => {
 function App() {
   return (
     <>
-    <HomeText></HomeText>
+    {/* <HomeText></HomeText> */}
     <Scene></Scene>
     </>
   );
