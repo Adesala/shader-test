@@ -17,7 +17,7 @@ import imageTexture2 from './assets/fondColor.png'
 
 
 const WaveShaderMaterial = shaderMaterial(
-
+ 
   //Uniform
   {
     uTime: 0,
@@ -110,7 +110,7 @@ const WaveShaderMaterial = shaderMaterial(
       float offx = uv.x + sin(uv.y + u_time * .1);
       float offy = uv.y - u_time * 0.1 - cos(u_time * .001) * .01;
     
-      float c = circle(circlePos, 0.02, 5.) * 2.5;
+      float c = circle(circlePos, 0.1, 2.) * 2.5;
 
       float n = snoise3(vec3(offx, offy, u_time * .1) * 8.) - 1.;
       
@@ -152,7 +152,8 @@ const Plane = (props) => {
     const y = (mouse.y * viewport.height)
     // ref.current.position.set(x, y, 0)
     /*    ref.current.rotation.set(-y, x, 0) */
-
+  /*   shaderRef.current.u_res.x = viewport.width;
+    shaderRef.current.u_res.y = viewport.height; */
     shaderRef.current.u_mouse = mouse;
     shaderRef.current.u_image = texture_1;
     shaderRef.current.u_imagehover = texture_2;
