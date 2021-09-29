@@ -7,8 +7,8 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { AmbientLight } from "three";
 import glsl from 'babel-plugin-glsl/macro';
 import { gsap, CSSPlugin } from 'gsap';
-import imageTexture from './assets/fondBandW.png'
-import imageTexture2 from './assets/fondColor.png'
+import imageTexture from './assets/fondFinal.png'
+import imageTexture2 from './assets/fondFinalColor.png'
 
 
 
@@ -25,7 +25,8 @@ const WaveShaderMaterial = shaderMaterial(
     u_imagehover: new THREE.Texture(),
     u_image: new THREE.Texture(),
     u_mouse: new THREE.Vector2(0, 0),
-    pr: window.devicePixelRatio.toFixed(1)
+    pr: window.devicePixelRatio.toFixed(1),
+    u_circleradius: 0.2,
 
 
   },
@@ -68,6 +69,8 @@ const WaveShaderMaterial = shaderMaterial(
     uniform  float pr;
     uniform sampler2D u_image;
     uniform sampler2D u_imagehover;
+    uniform float u_circleradius;
+    uniform float u_blur;
     #define TWO_PI 6.28318530718
     #pragma glslify: snoise3 = require(glsl-noise/simplex/3d);
 
@@ -94,12 +97,12 @@ const WaveShaderMaterial = shaderMaterial(
     void main() {
       
       vec2 uv = vUv;
-
+      float radius = u_circleradius;
       float u_time = uTime;
-      vec2 res = u_res * pr;
+      vec2 res = u_res;
       vec2 st = gl_FragCoord.xy / res.xy - vec2(0.5);
       // tip: use the following formula to keep the good ratio of your coordinates
-      st.y *= u_res.y / u_res.x;
+    //  st.y *= u_res.y / u_res.x;
     
       // We readjust the mouse coordinates
       vec2 mouse = u_mouse * -0.5;
@@ -110,7 +113,7 @@ const WaveShaderMaterial = shaderMaterial(
       float offx = uv.x + sin(uv.y + u_time * .1);
       float offy = uv.y - u_time * 0.1 - cos(u_time * .001) * .01;
     
-      float c = circle(circlePos, 0.1, 2.) * 2.5;
+      float c = circle(circlePos, radius, 2.) * 2.5;
 
       float n = snoise3(vec3(offx, offy, u_time * .1) * 8.) - 1.;
       
@@ -157,6 +160,11 @@ const Plane = (props) => {
     shaderRef.current.u_mouse = mouse;
     shaderRef.current.u_image = texture_1;
     shaderRef.current.u_imagehover = texture_2;
+  })
+
+  useEffect(()=> {
+gsap.to(shaderRef.current,{u_circleradius : 0.5,duration: 10})
+
   })
 
 
