@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { shaderMaterial, OrbitControls, ContactShadows, Environment, calcPosFromAngles } from '@react-three/drei';
+import { shaderMaterial, OrbitControls, ContactShadows, Environment, calcPosFromAngles,Preload, useProgress, Html } from '@react-three/drei';
 import { Canvas, extend, useFrame, useThree, useLoader } from '@react-three/fiber';
 import './App.css';
 import React, { useRef, Suspense, useState, useEffect, useContext } from 'react'
@@ -7,8 +7,8 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { AmbientLight } from "three";
 import glsl from 'babel-plugin-glsl/macro';
 import { gsap, CSSPlugin } from 'gsap';
-import imageTexture from './assets/fondFinal.png'
-import imageTexture2 from './assets/fondFinalColor.png'
+import imageTexture from './assets/moiFond0Satu.png'
+import imageTexture2 from './assets/moiFondCouleur.png'
 
 
 
@@ -26,7 +26,8 @@ const WaveShaderMaterial = shaderMaterial(
     u_image: new THREE.Texture(),
     u_mouse: new THREE.Vector2(0, 0),
     pr: window.devicePixelRatio.toFixed(1),
-    u_circleradius: 0.2,
+    u_circleradius: 0.,
+    u_textureOpacity:0.,
 
 
   },
@@ -71,6 +72,7 @@ const WaveShaderMaterial = shaderMaterial(
     uniform sampler2D u_imagehover;
     uniform float u_circleradius;
     uniform float u_blur;
+    uniform float u_textureOpacity;
     #define TWO_PI 6.28318530718
     #pragma glslify: snoise3 = require(glsl-noise/simplex/3d);
 
@@ -108,18 +110,19 @@ const WaveShaderMaterial = shaderMaterial(
       vec2 mouse = u_mouse * -0.5;
       
       vec2 circlePos = st + mouse;
-  
-    
+      float textureOpa = u_textureOpacity;
+      float variation = abs(sin(radius + mouse.y) * -0.5);
+     
       float offx = uv.x + sin(uv.y + u_time * .1);
       float offy = uv.y - u_time * 0.1 - cos(u_time * .001) * .01;
     
-      float c = circle(circlePos, radius, 2.) * 2.5;
+      float c = circle(circlePos, variation, 2.) * 2.5;
 
       float n = snoise3(vec3(offx, offy, u_time * .1) * 8.) - 1.;
       
       float finalMask = smoothstep(0.4, 0.5, n + pow(c, 2.));
-      vec4 image = texture2D(u_image, uv) * 0.8;
-      vec4 hover = texture2D(u_imagehover, uv) ; 
+      vec4 image = texture2D(u_image, uv) * textureOpa;
+      vec4 hover = texture2D(u_imagehover, uv) * textureOpa; 
     
       vec4 finalImage = mix(image, hover, finalMask);
 
@@ -160,13 +163,15 @@ const Plane = (props) => {
     shaderRef.current.u_mouse = mouse;
     shaderRef.current.u_image = texture_1;
     shaderRef.current.u_imagehover = texture_2;
+    console.log(mouse);
   })
 
   useEffect(()=> {
-gsap.to(shaderRef.current,{u_circleradius : 0.5,duration: 10})
-
+gsap.to(shaderRef.current,{u_circleradius : 0.2,duration: 5,delay:2})
+gsap.to(shaderRef.current,{u_textureOpacity:0.8,duration:5 })
   })
 
+ 
 
   return (
     <mesh position={[0, 0, 0]} ref={ref} scale={[viewport.width, viewport.height, 1]}>
@@ -178,9 +183,7 @@ gsap.to(shaderRef.current,{u_circleradius : 0.5,duration: 10})
 
 
 const HomeText = () => {
-  
-
-  return (
+   return (
 
             <div className="home-container">
               <div className="left-side"></div>
@@ -189,6 +192,20 @@ const HomeText = () => {
               </div>
                </div>
   )
+}
+
+
+
+const  Loader = () => {
+  const { active, progress, errors, item, loaded, total } = useProgress();
+ const loaderBar = useRef();
+console.log(useProgress())
+  useEffect(() => {
+    gsap.to(loaderBar.current,{width:progress.toFixed(0)})
+  })
+  return <Html center> <div  className="loading-overlay">
+  {/*   <div ref={loaderBar} className="loader-bar" ></div> */}
+   {/*  {progress.toFixed(1)} % loaded  */}</div></Html>
 }
 
 
@@ -206,7 +223,7 @@ const Scene = () => {
 
     <Canvas>
 
-      <Suspense fallback={null}>
+      <Suspense fallback={<Loader></Loader>}>
         <Plane></Plane>
         <ambientLight></ambientLight>
     
