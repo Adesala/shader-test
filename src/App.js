@@ -7,10 +7,11 @@ import { TextureLoader } from 'three/src/loaders/TextureLoader.js';
 import { AmbientLight } from "three";
 import glsl from 'babel-plugin-glsl/macro';
 import { gsap, CSSPlugin } from 'gsap';
-import imageTexture from './assets/moiFond0Satu.png'
-import imageTexture2 from './assets/moiFondCouleur.png'
+import imageTexture from './assets/tetedebite.png'
+import imageTexture2 from './assets/tetedebite2.png'
 
-
+import DotRing from './DotRing/DotRing';
+import { MouseContext } from './context/mouse-context';
 
 
 
@@ -39,7 +40,7 @@ const WaveShaderMaterial = shaderMaterial(
   varying float vWave;
   uniform float uTime;
   uniform vec2 u_mouse;
-  
+  #define TWO_PI 6.28318530718
   
   #pragma glslify: snoise3 = require(glsl-noise/simplex/3d);
     void main() {
@@ -47,11 +48,17 @@ const WaveShaderMaterial = shaderMaterial(
       vec2 mouse = u_mouse;
       vec3 pos = position;
       vec2 MyPos = position.xy;
-      float noiseFreqency = 0.4;
-      float amp = 0.6;
-     /*  vec3 noisePos = vec3(pos.x * noiseFreqency,0.1, 1. + uTime);
+      float transformed;
+      float noiseFreqency = 0.9;
+      float amp = 0.06;
+       vec2 seg = pos.xy - mouse;
+       vec2 dir = normalize(seg);
+       float dist = length(seg);
+     
+      vec3 noisePos = vec3(sin(vec2(dist * 1.,dist)), - clamp(1. / (dist * dist), 0., 1.)) ;
+     
       pos.z += snoise3(noisePos) * amp ;
-      vWave = pos.z;  */
+     // vWave = pos.z;  
       
       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
@@ -66,6 +73,7 @@ const WaveShaderMaterial = shaderMaterial(
     uniform float uOpacity;
     varying vec2 vUv;
     varying vec2 MyPos;
+    varying float vWave;
     uniform vec2 u_res;
     uniform  float pr;
     uniform sampler2D u_image;
@@ -97,6 +105,8 @@ const WaveShaderMaterial = shaderMaterial(
   
 
     void main() {
+
+      float wave = vWave;
       
       vec2 uv = vUv;
       float radius = u_circleradius;
@@ -111,18 +121,20 @@ const WaveShaderMaterial = shaderMaterial(
       
       vec2 circlePos = st + mouse;
       float textureOpa = u_textureOpacity;
-      float variation = abs(sin(radius + mouse.y) * -0.5);
+      float variation = abs(sin(radius + mouse.y) * -0.4);
      
       float offx = uv.x + sin(uv.y + u_time * .1);
       float offy = uv.y - u_time * 0.1 - cos(u_time * .001) * .01;
-    
-      float c = circle(circlePos, variation, 2.) * 2.5;
+
+
+        float c = circle(circlePos, variation, 2.) * 2.5;
+      
 
       float n = snoise3(vec3(offx, offy, u_time * .1) * 8.) - 1.;
       
       float finalMask = smoothstep(0.4, 0.5, n + pow(c, 2.));
-      vec4 image = texture2D(u_image, uv) * textureOpa;
-      vec4 hover = texture2D(u_imagehover, uv) * textureOpa; 
+      vec4 image = texture2D(u_image, uv + wave) * textureOpa;
+      vec4 hover = texture2D(u_imagehover, uv + wave) * textureOpa; 
     
       vec4 finalImage = mix(image, hover, finalMask);
 
@@ -149,7 +161,7 @@ const Plane = (props) => {
   const shaderRef = useRef();
   const texture_1 = useLoader(TextureLoader, imageTexture);
   const texture_2 = useLoader(TextureLoader, imageTexture2);
-  console.log(texture_1)
+ // console.log(texture_1)
   useFrame(({ clock }) => (shaderRef.current.uTime = clock.getElapsedTime()));
 
   const { viewport } = useThree()
@@ -163,7 +175,7 @@ const Plane = (props) => {
     shaderRef.current.u_mouse = mouse;
     shaderRef.current.u_image = texture_1;
     shaderRef.current.u_imagehover = texture_2;
-    console.log(mouse);
+    //console.log(mouse);
   })
 
   useEffect(()=> {
@@ -174,9 +186,9 @@ gsap.to(shaderRef.current,{u_textureOpacity:0.8,duration:5 })
  
 
   return (
-    <mesh position={[0, 0, 0]} ref={ref} scale={[viewport.width, viewport.height, 1]}>
-      <planeBufferGeometry args={[1, 1, 1, 1]} attach="geometry" rotation={[0, 0, 0]} />
-      <waveShaderMaterial attach="material" ref={shaderRef} />
+    <mesh position={[0, 0, 0]} ref={ref}>
+      <planeBufferGeometry args={[viewport.width  + 0.2, viewport.height + 0.2,64,64]} attach="geometry" rotation={[0, 0, 0]} />
+      <waveShaderMaterial attach="material" ref={shaderRef}  />
     </mesh>
   )
 }
@@ -211,6 +223,8 @@ console.log(useProgress())
 
 
 
+
+
 const Scene = () => {
 
   /*   const snap = useSnapshot(state)
@@ -230,6 +244,7 @@ const Scene = () => {
       </Suspense>
       <OrbitControls enabled={false} />
       <ContactShadows></ContactShadows>
+      
     </Canvas>);
 
 }
@@ -238,10 +253,21 @@ const Scene = () => {
 
 
 function App() {
+
+  const { cursorType, cursorChangeHandler } = useContext(MouseContext);
+
+
+
+  
   return (
     <>
     {/* <HomeText></HomeText> */}
     <Scene></Scene>
+    <DotRing></DotRing>
+    <div className="section-two" onPointerOver={()=> {cursorChangeHandler("Play");console.log(cursorChangeHandler)}} onPointerLeave={()=> {cursorChangeHandler("")}}>
+    
+      <h1 className="title-project">Projects</h1>
+    </div>
     </>
   );
 }

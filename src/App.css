@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ephesis&family=Epilogue:wght@700&display=swap');
 * {
   box-sizing: border-box;
 }
@@ -63,4 +65,31 @@ body,
   background-color: #101111;
   color:white;
   z-index: 99999999999;
+}
+
+.section-two {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  background-color: #C6C6C6;
+  pointer-events: all;
+}
+
+.title-project {
+  position: absolute;
+  top:10vh;
+  left: 10vw;
+  font-family: 'Epilogue', sans-serif;
+  font-family: 'Ephesis', cursive;
+  font-size: 80px;
+  font-weight: bold;
+  color: #11685d;
+}
+
+.super-cursor {
+  height: 100px;
+  width: 100px;
+  border-radius: 50% 50%;
+  background-color: blue;
+  
 }

@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Merienda+One&display=swap');
+.ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid white;
+    border-radius: 100%;
+    transform: translate(-50%, -50%);
+    -webkit-transition-duration: 100ms;
+    transition-duration: 100ms;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+    will-change: width, height, transform, border;
+    z-index: 2;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .dot {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+  }
+  
+  .ring.Fall {
+    width: 100px;
+    height: 100px;
+    border-width: 0px;
+    background-color: rgb(175, 38, 4);
+ 
+    background-position: center;
+    background-size: contain;
+    cursor: none;
+    -webkit-filter: url(#noise);
+    filter: url(#noise);
+    
+  }
+
+
+
+  .ring.Play {
+    width: 100px;
+    height: 100px;
+    border-width: 0px;
+    background-color: white;
+
+    cursor: none;
+    -webkit-filter: url(#noise);
+    filter: url(#noise);
+    
+  }
+
+
+  .ring.Expand {
+    position:fixed;
+    border-width: 0px;
+    background-color: white;
+    transform: scale(10);
+    cursor: none;
+
+    top:30vh;
+    
+  }
+
+.dot.Play {
+  display: none;
+}
+
+   .spring-cursor-txt{
+    font-family: 'Merienda One', cursive;
+    color: red;
+    display: none;
+  } 
+  .automn-cursor-txt {
+    font-family: 'Merienda One', cursive;
+    color: white;
+    display: none;
+  }
+
+svg {
+  display: none;
+}
+
+  .ring.Spring {
+    width: 100px;
+    height: 100px;
+    border-width: 0px;
+    background-color: rgb(19, 75, 85);
+
+    background-position: center;
+    background-size: contain;
+    cursor: none;
+    -webkit-filter: url(#noise);
+    filter: url(#noise);
+  }
+
+  .ring.Close {
+    width: 100px;
+    height: 100px;
+    color : rgb(19, 75, 85);
+    border-width: 0px;
+    background-color: white;
+    cursor: none;
+    -webkit-filter: url(#noise);
+    filter: url(#noise);
+  }
+
+
+
+  .ring.Spring::before {
+    
+  }
+  
+  .dot.Fall {
+    display: none;
+  }
+  
+  .dot.Spring {
+background-color: red;
+display: none;
+  }
+
+  .dot.Close, .dot.Play {
+ 
+    display: none;
+      }
